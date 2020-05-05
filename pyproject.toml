@@ -1,0 +1,74 @@
+[tool.poetry]
+name = "aiogram-cli"
+version = "0.0.1-alpha.1"
+description = "aiogram CLI"
+authors = ["Alex Root Junior <jroot.junior@gmail.com>"]
+license = "MIT"
+classifiers = [
+	"Development Status :: 3 - Alpha",
+	"Environment :: Console",
+	"Environment :: Plugins",
+	"License :: OSI Approved :: MIT License",
+	"Programming Language :: Python :: 3.7",
+	"Programming Language :: Python :: 3.8",
+	"Programming Language :: Python :: 3.9",
+	"Topic :: Utilities",
+	"Typing :: Typed",
+]
+keywords = [
+	"aiogram",
+	"cli",
+]
+build = "build.py"
+
+[[tool.poetry.source]]
+name = "aiogram-dev"
+url = "https://dev-docs.aiogram.dev/simple"
+secondary = true
+
+[tool.poetry.dependencies]
+python = "^3.8"
+click = "^7.1.2"
+typer = {extras = ["all"], version = "^0.2.1"}
+aiogram = {version = "^3.0.0-alpha.4", allow-prereleases = true}
+
+[tool.poetry.dev-dependencies]
+typing_extensions = "^3.7.4"
+black = "^19.10b0"
+isort = "^4.3.21"
+flake8 = "^3.7.9"
+mypy = "^0.770"
+ipython = "^7.14.0"
+pytest = "^5.4.1"
+
+[tool.poetry.scripts]
+aiogram = "aiogram_cli.main:main"
+
+[tool.poetry.plugins."aiogram_cli.plugins"]
+"builtins" = "aiogram_cli.commands.builtin:setup"
+
+[tool.black]
+line-length = 99
+target-version = ['py37', 'py38']
+exclude = '''
+(
+    \.eggs
+  | \.git
+  | \.tox
+  | build
+  | dist
+  | venv
+  | docs
+)
+'''
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 99
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
