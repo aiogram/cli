@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aiogram-cli"
-version = "0.0.1-alpha.1"
+version = "0.0.1-alpha.2"
 description = "aiogram CLI"
 authors = ["Alex Root Junior <jroot.junior@gmail.com>"]
 license = "MIT"
@@ -19,7 +19,6 @@ keywords = [
 	"aiogram",
 	"cli",
 ]
-build = "build.py"
 
 [[tool.poetry.source]]
 name = "aiogram-dev"
@@ -33,7 +32,6 @@ typer = {extras = ["all"], version = "^0.2.1"}
 aiogram = {version = "^3.0.0-alpha.4", allow-prereleases = true}
 
 [tool.poetry.dev-dependencies]
-typing_extensions = "^3.7.4"
 black = "^19.10b0"
 isort = "^4.3.21"
 flake8 = "^3.7.9"

@@ -1,3 +1,1 @@
-from aiogram_cli import _meta
-
-__version__ = _meta.VERSION
+__version__ = "0.0.1a2"
