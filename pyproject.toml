@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aiogram-cli"
-version = "0.0.1-alpha.3"
+version = "0.0.1-alpha.4"
 description = "aiogram CLI"
 authors = ["Alex Root Junior <jroot.junior@gmail.com>"]
 license = "MIT"
@@ -32,6 +32,7 @@ secondary = true
 python = "^3.8"
 aiogram = {version = "^3.0.0-alpha.4", allow-prereleases = true}
 cleo = "^0.8.1"
+pytest-cov = "^2.8.1"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
