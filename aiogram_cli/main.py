@@ -1,11 +1,20 @@
 from typing import Any
 
-import typer
+from cleo import Application
 
-from aiogram_cli.loader import setup_plugins
+from aiogram_cli import __version__
+from aiogram_cli.loader import ExtensionsLoader
+
+
+def get_application() -> Application:
+    app = Application("aiogram-cli", __version__)
+
+    loader = ExtensionsLoader()
+    loader.setup(app=app)
+
+    return app
 
 
 def main() -> Any:
-    app = typer.Typer()
-    setup_plugins(app)
-    return app()
+    app = get_application()
+    return app.run()

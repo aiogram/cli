@@ -1,9 +1,12 @@
 [tool.poetry]
 name = "aiogram-cli"
-version = "0.0.1-alpha.2"
+version = "0.0.1-alpha.3"
 description = "aiogram CLI"
 authors = ["Alex Root Junior <jroot.junior@gmail.com>"]
 license = "MIT"
+readme = "README.md"
+homepage = "https://aiogram.dev/"
+repository = "https://github.com/aiogram/cli/"
 classifiers = [
 	"Development Status :: 3 - Alpha",
 	"Environment :: Console",
@@ -27,9 +30,8 @@ secondary = true
 
 [tool.poetry.dependencies]
 python = "^3.8"
-click = "^7.1.2"
-typer = {extras = ["all"], version = "^0.2.1"}
 aiogram = {version = "^3.0.0-alpha.4", allow-prereleases = true}
+cleo = "^0.8.1"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
@@ -41,9 +43,11 @@ pytest = "^5.4.1"
 
 [tool.poetry.scripts]
 aiogram = "aiogram_cli.main:main"
+aiogram-cli = "aiogram_cli.main:main"
 
 [tool.poetry.plugins."aiogram_cli.plugins"]
-"builtins" = "aiogram_cli.commands.builtin:setup"
+"builtin-about" = "aiogram_cli.commands.about:AboutCommand"
+"builtin-plugins" = "aiogram_cli.commands.plugins:PluginsListCommand"
 
 [tool.black]
 line-length = 99
