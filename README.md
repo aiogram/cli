@@ -43,9 +43,9 @@ Just run in terminal `aiogram-cli` (Or alias - `aiogram`) and see what you can d
 ## Writing extensions
 
 Any **aiogram-cli** extension package should provide an entry point like this:
-```
+```toml
 [aiogram_cli.plugins]
-my_extension = my_package.module:MyCommand
+my_extension = "my_package.module:MyCommand"
 ```
 
 Or with poetry like this:
