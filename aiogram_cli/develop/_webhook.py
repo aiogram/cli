@@ -34,7 +34,7 @@ def start_webhook(
         basicConfig(level=log_level, format=log_format)
 
     click.echo("=" * 80)
-    click.echo(f"Running bot on aiogram v{aiogram.__version__} in polling mode")
+    click.echo(f"Running bot on aiogram v{aiogram.__version__} in webhook mode")
 
     click.echo("Loading application...")
     try:
