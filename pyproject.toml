@@ -1,77 +1,174 @@
-[tool.poetry]
-name = "aiogram-cli"
-version = "0.0.1-alpha.4"
-description = "aiogram CLI"
-authors = ["Alex Root Junior <jroot.junior@gmail.com>"]
-license = "MIT"
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "aiogram_cli"
+dynamic = ["version"]
+description = ''
 readme = "README.md"
-homepage = "https://aiogram.dev/"
-repository = "https://github.com/aiogram/cli/"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [
+    { name = "Alex Root Junior", email = "jroot.junior@gmail.com" },
+]
 classifiers = [
-	"Development Status :: 3 - Alpha",
-	"Environment :: Console",
-	"Environment :: Plugins",
-	"License :: OSI Approved :: MIT License",
-	"Programming Language :: Python :: 3.7",
-	"Programming Language :: Python :: 3.8",
-	"Programming Language :: Python :: 3.9",
-	"Topic :: Utilities",
-	"Typing :: Typed",
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Environment :: Console",
+    "Environment :: Plugins",
+    "Topic :: Utilities",
 ]
-keywords = [
-	"aiogram",
-	"cli",
+dependencies = [
+    "click~=8.1.6",
+    "click-plugins~=1.1.1",
+    "colorama~=0.4.6",
+    "aiogram~=3.0.0rc1",
+    "watchfiles~=0.19.0",
 ]
 
-[[tool.poetry.source]]
-name = "aiogram-dev"
-url = "https://dev-docs.aiogram.dev/simple"
-secondary = true
+[project.urls]
+Documentation = "https://github.com/aiogram/cli#readme"
+Issues = "https://github.com/aiogram/cli/issues"
+Source = "https://github.com/aiogram/cli"
 
-[tool.poetry.dependencies]
-python = "^3.8"
-aiogram = {version = "^3.0.0-alpha.4", allow-prereleases = true}
-cleo = "^0.8.1"
-pytest-cov = "^2.8.1"
+[project.scripts]
+aiogram = "aiogram_cli.main:cli"
 
-[tool.poetry.dev-dependencies]
-black = "^19.10b0"
-isort = "^4.3.21"
-flake8 = "^3.7.9"
-mypy = "^0.770"
-ipython = "^7.14.0"
-pytest = "^5.4.1"
+[project.entry-points."aiogram_cli.plugins"]
+builtin-plugins = "aiogram_cli.plugins:command_plugins"
+builtin-version = "aiogram_cli.version:command_version"
+builtin-develop = "aiogram_cli.develop.plugin:develop_runner"
 
-[tool.poetry.scripts]
-aiogram = "aiogram_cli.main:main"
-aiogram-cli = "aiogram_cli.main:main"
+[tool.hatch.version]
+path = "aiogram_cli/__init__.py"
 
-[tool.poetry.plugins."aiogram_cli.plugins"]
-"builtin-about" = "aiogram_cli.commands.about:AboutCommand"
-"builtin-plugins" = "aiogram_cli.commands.plugins:PluginsListCommand"
+[tool.hatch.envs.default]
+dependencies = [
+    "coverage[toml]>=6.5",
+    "pytest",
+]
+[tool.hatch.envs.default.scripts]
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = [
+    "- coverage combine",
+    "coverage report",
+]
+cov = [
+    "test-cov",
+    "cov-report",
+]
+
+[[tool.hatch.envs.all.matrix]]
+python = ["3.7", "3.8", "3.9", "3.10", "3.11"]
+
+[tool.hatch.envs.lint]
+detached = true
+dependencies = [
+    "black>=23.1.0",
+    "mypy>=1.0.0",
+    "ruff>=0.0.243",
+]
+[tool.hatch.envs.lint.scripts]
+typing = "mypy --install-types --non-interactive {args:cli tests}"
+style = [
+    "ruff {args:.}",
+    "black --check --diff {args:.}",
+]
+fmt = [
+    "black {args:.}",
+    "ruff --fix {args:.}",
+    "style",
+]
+all = [
+    "style",
+    "typing",
+]
 
 [tool.black]
-line-length = 99
-target-version = ['py37', 'py38']
-exclude = '''
-(
-    \.eggs
-  | \.git
-  | \.tox
-  | build
-  | dist
-  | venv
-  | docs
-)
-'''
+target-version = ["py37"]
+line-length = 120
+skip-string-normalization = true
 
-[tool.isort]
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
-line_length = 99
+[tool.ruff]
+target-version = "py37"
+line-length = 120
+select = [
+    "A",
+    "ARG",
+    "B",
+    "C",
+    "DTZ",
+    "E",
+    "EM",
+    "F",
+    "FBT",
+    "I",
+    "ICN",
+    "ISC",
+    "N",
+    "PLC",
+    "PLE",
+    "PLR",
+    "PLW",
+    "Q",
+    "RUF",
+    "S",
+    "T",
+    "TID",
+    "UP",
+    "W",
+    "YTT",
+]
+ignore = [
+    # Allow non-abstract empty methods in abstract base classes
+    "B027",
+    # Allow boolean positional values in function calls, like `dict.get(... True)`
+    "FBT003",
+    # Ignore checks for possible passwords
+    "S105", "S106", "S107",
+    # Ignore complexity
+    "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
+]
+unfixable = [
+    # Don't touch unused imports
+    "F401",
+]
 
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+[tool.ruff.isort]
+known-first-party = ["cli"]
+
+[tool.ruff.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.per-file-ignores]
+# Tests can use magic values, assertions, and relative imports
+"tests/**/*" = ["PLR2004", "S101", "TID252"]
+
+[tool.coverage.run]
+source_pkgs = ["cli", "tests"]
+branch = true
+parallel = true
+omit = [
+    "cli/__about__.py",
+]
+
+[tool.coverage.paths]
+cli = ["cli", "*/cli/cli"]
+tests = ["tests", "*/cli/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "no cov",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]

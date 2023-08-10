@@ -1,20 +1,14 @@
-from typing import Any
-
-from cleo import Application
+import click
+from click_plugins import with_plugins
+from pkg_resources import iter_entry_points
 
 from aiogram_cli import __version__
-from aiogram_cli.loader import ExtensionsLoader
 
 
-def get_application() -> Application:
-    app = Application("aiogram-cli", __version__)
-
-    loader = ExtensionsLoader()
-    loader.setup(app=app)
-
-    return app
-
-
-def main() -> Any:
-    app = get_application()
-    return app.run()
+@with_plugins(iter_entry_points("aiogram_cli.plugins"))
+@click.group(
+    context_settings={"help_option_names": ["-h", "--help"]},
+)
+@click.version_option(version=__version__, prog_name="aiogram-cli", message="%(version)s")
+def cli():
+    pass
