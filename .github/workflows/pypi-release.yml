@@ -33,8 +33,9 @@ jobs:
           mkdir -p try_install
           cd try_install
           virtualenv venv
-          venv/bin/pip install ../dist/aiogram-*.whl
-          venv/bin/python -c "import aiogram; print(aiogram.__version__)"
+          venv/bin/pip install ../dist/aiogram_cli-*.whl
+          venv/bin/python -c "import aiogram_cli; print(aiogram_cli.__version__)"
+
       - name: Publish artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -47,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/project/aiogram/
+      url: https://pypi.org/project/aiogram_cli/
     permissions:
       id-token: write
     steps:
