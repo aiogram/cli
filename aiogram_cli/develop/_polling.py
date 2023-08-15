@@ -1,13 +1,15 @@
 import asyncio
 import sys
 from logging import basicConfig
+from typing import Any
 
 import aiogram
 import click
-from aiogram import Bot, Dispatcher
+from aiogram import Bot
 from aiogram.enums import ParseMode
 
-from aiogram_cli.develop._resolver import LoadError, resolve_dispatcher
+from aiogram_cli.develop._resolver import LoadError
+from aiogram_cli.develop._dispatcher import prepare_dispatcher, resolve_dispatcher
 
 
 def start_polling(
@@ -29,26 +31,29 @@ def start_polling(
 
     click.echo("Loading application...")
     try:
-        dispatcher = resolve_dispatcher(target=target, skip_updates=skip_updates)
+        dispatcher = resolve_dispatcher(target=target)
     except LoadError as e:
         click.echo(str(e), err=True)
         sys.exit(2)
 
+    # TODO: Add possibility to specify bot instance
     bot = Bot(
         token=token,
         parse_mode=parse_mode,
         disable_web_page_preview=disable_web_page_preview,
         protect_content=protect_content,
     )
-    click.echo("Start polling")
-    asyncio.run(_polling(bot=bot, dispatcher=dispatcher))
+
+    asyncio.run(_polling(bot=bot, dispatcher=dispatcher, skip_updates=skip_updates))
     return 0
 
 
 async def _polling(
     *,
-    dispatcher: Dispatcher,
+    dispatcher: Any,
     bot: Bot,
+    skip_updates: bool = False,
 ):
+    dispatcher = await prepare_dispatcher(dispatcher=dispatcher, skip_updates=skip_updates)
     async with bot.context() as bot:
         await dispatcher.start_polling(bot, close_bot_session=False)

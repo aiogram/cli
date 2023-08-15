@@ -9,7 +9,8 @@ from aiogram.enums import ParseMode
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiohttp.web import Application, run_app
 
-from aiogram_cli.develop._resolver import LoadError, resolve_dispatcher
+from aiogram_cli.develop._resolver import LoadError
+from aiogram_cli.develop._dispatcher import resolve_dispatcher, simplified_prepare_dispatcher
 
 logger = logging.getLogger(__name__)
 
@@ -38,11 +39,12 @@ def start_webhook(
 
     click.echo("Loading application...")
     try:
-        dispatcher = resolve_dispatcher(target=target, skip_updates=skip_updates)
+        dispatcher = resolve_dispatcher(target=target)
     except LoadError as e:
         click.echo(str(e), err=True)
         sys.exit(2)
 
+    dispatcher = simplified_prepare_dispatcher(dispatcher=dispatcher, skip_updates=skip_updates)
     bot = Bot(
         token=token,
         parse_mode=parse_mode,

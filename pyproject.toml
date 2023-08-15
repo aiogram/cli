@@ -7,7 +7,7 @@ name = "aiogram_cli"
 dynamic = ["version"]
 description = ''
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = "MIT"
 keywords = []
 authors = [
@@ -44,8 +44,6 @@ Source = "https://github.com/aiogram/cli"
 aiogram = "aiogram_cli.main:cli"
 
 [project.entry-points."aiogram_cli.plugins"]
-builtin-plugins = "aiogram_cli.plugins:command_plugins"
-builtin-version = "aiogram_cli.version:command_version"
 builtin-develop = "aiogram_cli.develop.plugin:develop_runner"
 
 [tool.hatch.version]
@@ -67,9 +65,6 @@ cov = [
     "test-cov",
     "cov-report",
 ]
-
-[[tool.hatch.envs.all.matrix]]
-python = ["3.7", "3.8", "3.9", "3.10", "3.11"]
 
 [tool.hatch.envs.lint]
 detached = true
@@ -93,6 +88,13 @@ all = [
     "style",
     "typing",
 ]
+
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.10", "3.11"]
+
+[tool.hatch.envs.test]
+
 
 [tool.black]
 target-version = ["py37"]
