@@ -9,8 +9,8 @@ from aiogram.enums import ParseMode
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiohttp.web import Application, run_app
 
-from aiogram_cli.develop._resolver import LoadError
 from aiogram_cli.develop._dispatcher import resolve_dispatcher, simplified_prepare_dispatcher
+from aiogram_cli.develop._resolver import LoadError
 
 logger = logging.getLogger(__name__)
 

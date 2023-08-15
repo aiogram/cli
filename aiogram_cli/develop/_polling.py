@@ -8,8 +8,8 @@ import click
 from aiogram import Bot
 from aiogram.enums import ParseMode
 
-from aiogram_cli.develop._resolver import LoadError
 from aiogram_cli.develop._dispatcher import prepare_dispatcher, resolve_dispatcher
+from aiogram_cli.develop._resolver import LoadError
 
 
 def start_polling(
