@@ -1,7 +1,8 @@
 import inspect
 from typing import Any
 
-from aiogram import Bot, Dispatcher
+import click
+from aiogram import Bot, Dispatcher, Router
 
 from aiogram_cli.develop._resolver import logger, resolve_import
 
@@ -29,6 +30,8 @@ async def prepare_dispatcher(*, dispatcher: Any, skip_updates: bool) -> Dispatch
     if skip_updates:
         dispatcher.startup.register(do_skip_updates)
 
+    _add_status_watcher(dispatcher)
+
     return dispatcher
 
 
@@ -43,4 +46,22 @@ def simplified_prepare_dispatcher(*, dispatcher: Any, skip_updates: bool) -> Dis
     if skip_updates:
         dispatcher.startup.register(do_skip_updates)
 
+    _add_status_watcher(dispatcher)
+
     return dispatcher
+
+
+def _add_status_watcher(dispatcher: Dispatcher):
+    last_router = Router(name="_aiogram_cli_status")
+    dispatcher.include_router(last_router)
+
+    last_router.startup.register(startup_completed_callback)
+    last_router.shutdown.register(shutdown_completed_callback)
+
+
+async def startup_completed_callback():
+    click.echo("Application started")
+
+
+async def shutdown_completed_callback():
+    click.echo("Application stopped")

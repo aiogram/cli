@@ -1,3 +1,4 @@
+import sys
 from contextlib import suppress
 from os import getenv
 from pathlib import Path
@@ -28,6 +29,7 @@ LOGGING_LEVELS = [
 @click.group("run")
 def develop_runner():
     """Run bot in development mode"""
+    sys.path.append(str(Path().resolve()))
 
 
 @develop_runner.command("polling")
@@ -153,10 +155,12 @@ def command_polling(
 @click.option(
     "--ssl-certificate",
     help="SSL certificate path",
+    type=click.Path(exists=True, readable=True),
 )
 @click.option(
     "--ssl-private-key",
     help="SSL private key path",
+    type=click.Path(exists=True, readable=True),
 )
 @click.option(
     "--address",
@@ -224,10 +228,10 @@ def command_webhook(
     host: str,
     port: int,
     path: str,
-    ssl_certificate: str,
-    ssl_private_key: str,
-    address: str,
-    secret: str,
+    ssl_certificate: Path | None,
+    ssl_private_key: Path | None,
+    address: str | None,
+    secret: str | None,
     token: str,
     parse_mode: ParseMode,
     disable_web_page_preview: bool,
@@ -249,8 +253,8 @@ def command_webhook(
         "host": host,
         "port": port,
         "path": path,
-        # "ssl_certificate": ssl_certificate,
-        # "ssl_private_key": ssl_private_key,
+        "ssl_certificate": ssl_certificate,
+        "ssl_private_key": ssl_private_key,
         "webhook_address": address,
         "webhook_secret": secret,
         "token": token,
@@ -295,6 +299,7 @@ async def command_info(token: str):
     click.echo(style("Bot info:", fg="green", bold=True))
     click.echo("  " + style("ID: ", bold=True, fg="green") + str(me.id))
     click.echo("  " + style("Username: ", bold=True, fg="green") + f"@{me.username} (https://t.me/{me.username})")
+    click.echo("  " + style("Name: ", bold=True, fg="green") + me.full_name)
     if me.is_premium:
         click.echo("  " + style("Premium: ", bold=True, fg="green") + "Yes")
     if webhook_info.url:
