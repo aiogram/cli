@@ -9,7 +9,7 @@ Here is only bootstrap for CLI interface with extensions based on [pkg_resources
 ## Installation
 
 ### From PyPi
-`pip install aiogram-cli`
+`pip install aiogram-cli` or `pip install aiogram[cli]`
 
 ## Usage
 
@@ -17,10 +17,7 @@ Just run in terminal `aiogram` and see what you can do with it.
 
 ## Example
 
-![main interface](assets/cli.png)
-
-![commands](assets/commands.png)
-
+[![asciicast](https://asciinema.org/a/5tg0CV7ogvuqQz8ZmHP9CBPjl.svg)](https://asciinema.org/a/5tg0CV7ogvuqQz8ZmHP9CBPjl)
 
 ## Writing extensions
 
