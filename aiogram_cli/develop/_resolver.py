@@ -10,6 +10,9 @@ class LoadError(Exception):
 
 
 def resolve_import(*, target: str, possible_names: set[str] | None = None) -> Any:
+    if possible_names is None:
+        possible_names = set()
+
     module_name, _, target_name = target.partition(":")
     try:
         module = importlib.import_module(module_name)
