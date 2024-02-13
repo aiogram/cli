@@ -11,7 +11,10 @@ from aiogram_cli.resolver import iter_entry_points
 
 @with_plugins(iter_entry_points("aiogram_cli.plugins"))
 @click.group(
-    context_settings={"help_option_names": ["-h", "--help"]},
+    context_settings={
+        "help_option_names": ["-h", "--help"],
+        "show_default": True,
+    },
 )
 @click.version_option(version=__version__, prog_name="aiogram-cli", message="%(version)s")
 def cli():

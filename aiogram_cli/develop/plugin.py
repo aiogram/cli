@@ -1,3 +1,4 @@
+import functools
 import sys
 from contextlib import suppress
 from os import getenv
@@ -5,6 +6,7 @@ from pathlib import Path
 
 import click
 from aiogram import Bot
+from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from click import Choice, style
 from watchfiles import run_process
@@ -32,6 +34,50 @@ def develop_runner():
     sys.path.append(str(Path().resolve()))
 
 
+def defaults_options(func):
+    @click.option("--parse-mode", type=Choice(ParseMode), help="Default parse mode", default=ParseMode.HTML.value)
+    @click.option("--protect-content", is_flag=True, help="Protect content from telegram clients by default")
+    @click.option("--disable-notification", is_flag=True, help="Disable notification by default")
+    @click.option("--allow-sending-without-reply", is_flag=True, help="Allow sending messages without reply by default")
+    @click.option("--disable-web-page-preview", is_flag=True, help="[DEPRECATED] Disable web page preview by default")
+    @click.option("--link-preview-is-disabled", is_flag=True, help="Disable web page preview by default")
+    @click.option("--link-preview-prefer-small-media", is_flag=True, help="Prefer small media for link preview")
+    @click.option("--link-preview-prefer-large-media", is_flag=True, help="Prefer large media for link preview")
+    @click.option("--link-preview-show-above-text", is_flag=True, help="Show link preview above text")
+    @functools.wraps(func)
+    def _wrapper(
+            *args,
+            parse_mode: ParseMode | None,
+            protect_content: bool | None,
+            disable_notification: bool | None,
+            allow_sending_without_reply: bool | None,
+            disable_web_page_preview: bool | None,
+            link_preview_is_disabled: bool | None,
+            link_preview_prefer_small_media: bool | None,
+            link_preview_prefer_large_media: bool | None,
+            link_preview_show_above_text: bool | None,
+            **kwargs,
+    ):
+        if disable_web_page_preview:
+            click.secho(
+                "Option --disable-web-page-preview is deprecated, use --link-preview-is-disabled instead",
+                fg="yellow",
+            )
+        kwargs["defaults"] = DefaultBotProperties(
+            parse_mode=parse_mode or None,
+            protect_content=protect_content or None,
+            disable_notification=disable_notification or None,
+            allow_sending_without_reply=allow_sending_without_reply or None,
+            link_preview_is_disabled=link_preview_is_disabled or disable_web_page_preview or None,
+            link_preview_prefer_small_media=link_preview_prefer_small_media or None,
+            link_preview_prefer_large_media=link_preview_prefer_large_media or None,
+            link_preview_show_above_text=link_preview_show_above_text or None,
+        )
+        return func(*args, **kwargs)
+
+    return _wrapper
+
+
 @develop_runner.command("polling")
 @click.argument(
     "dispatcher",
@@ -42,23 +88,7 @@ def develop_runner():
     "-t",
     help="Bot token",
     required=True,
-    default=getenv("TELEGRAM_TOKEN"),
-)
-@click.option(
-    "--parse-mode",
-    type=Choice(ParseMode),
-    help="Default parse mode",
-    default=ParseMode.HTML,
-)
-@click.option(
-    "--disable-web-page-preview",
-    is_flag=True,
-    help="Disable web page preview by default",
-)
-@click.option(
-    "--protect-content",
-    is_flag=True,
-    help="Protect content from telegram clients by default",
+    envvar="TELEGRAM_TOKEN",
 )
 @click.option(
     "--skip-updates",
@@ -89,18 +119,17 @@ def develop_runner():
     help="Reload modules",
     multiple=True,
 )
+@defaults_options
 def command_polling(
-    *,
-    dispatcher: str,
-    token: str,
-    parse_mode: ParseMode,
-    disable_web_page_preview: bool,
-    protect_content: bool,
-    skip_updates: bool,
-    reload: bool,
-    log_level: str,
-    log_format: str,
-    reload_path: tuple[str],
+        *,
+        dispatcher: str,
+        token: str,
+        defaults: DefaultBotProperties,
+        skip_updates: bool,
+        reload: bool,
+        log_level: str,
+        log_format: str,
+        reload_path: tuple[str],
 ):
     """
     Run bot in development mode with polling updates
@@ -111,12 +140,10 @@ def command_polling(
     kwargs = {
         "target": dispatcher,
         "token": token,
-        "parse_mode": parse_mode,
         "skip_updates": skip_updates,
-        "disable_web_page_preview": disable_web_page_preview,
-        "protect_content": protect_content,
         "log_level": log_level,
         "log_format": log_format,
+        "defaults": defaults,
     }
     with suppress(KeyboardInterrupt):
         if reload:
@@ -169,29 +196,14 @@ def command_polling(
 @click.option(
     "--secret",
     help="Webhook secret to be passed into setWebhook method",
+    envvar="TELEGRAM_WEBHOOK_SECRET",
 )
 @click.option(
     "--token",
     "-t",
     help="Bot token",
     required=True,
-    default=getenv("TELEGRAM_TOKEN"),
-)
-@click.option(
-    "--parse-mode",
-    type=Choice(ParseMode),
-    help="Default parse mode",
-    default=ParseMode.HTML,
-)
-@click.option(
-    "--disable-web-page-preview",
-    is_flag=True,
-    help="Disable web page preview by default",
-)
-@click.option(
-    "--protect-content",
-    is_flag=True,
-    help="Protect content from telegram clients by default",
+    envvar="TELEGRAM_TOKEN",
 )
 @click.option(
     "--skip-updates",
@@ -222,25 +234,24 @@ def command_polling(
     help="Reload modules",
     multiple=True,
 )
+@defaults_options
 def command_webhook(
-    *,
-    dispatcher: str,
-    host: str,
-    port: int,
-    path: str,
-    ssl_certificate: Path | None,
-    ssl_private_key: Path | None,
-    address: str | None,
-    secret: str | None,
-    token: str,
-    parse_mode: ParseMode,
-    disable_web_page_preview: bool,
-    protect_content: bool,
-    skip_updates: bool,
-    reload: bool,
-    log_level: str,
-    log_format: str,
-    reload_path: tuple[str],
+        *,
+        dispatcher: str,
+        host: str,
+        port: int,
+        path: str,
+        ssl_certificate: Path | None,
+        ssl_private_key: Path | None,
+        address: str | None,
+        secret: str | None,
+        token: str,
+        defaults: DefaultBotProperties,
+        skip_updates: bool,
+        reload: bool,
+        log_level: str,
+        log_format: str,
+        reload_path: tuple[str],
 ):
     """
     Run bot in development mode with webhook updates
@@ -258,10 +269,8 @@ def command_webhook(
         "webhook_address": address,
         "webhook_secret": secret,
         "token": token,
-        "parse_mode": parse_mode,
         "skip_updates": skip_updates,
-        "disable_web_page_preview": disable_web_page_preview,
-        "protect_content": protect_content,
+        "defaults": defaults,
         "log_level": log_level,
         "log_format": log_format,
     }

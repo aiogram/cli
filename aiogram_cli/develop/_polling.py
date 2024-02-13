@@ -6,7 +6,7 @@ from typing import Any
 import aiogram
 import click
 from aiogram import Bot
-from aiogram.enums import ParseMode
+from aiogram.client.default import DefaultBotProperties
 
 from aiogram_cli.develop._dispatcher import prepare_dispatcher, resolve_dispatcher
 from aiogram_cli.develop._resolver import LoadError
@@ -16,9 +16,7 @@ def start_polling(
     *,
     target: str,
     token: str,
-    parse_mode: ParseMode,
-    disable_web_page_preview: bool,
-    protect_content: bool,
+    defaults: DefaultBotProperties,
     skip_updates: bool,
     log_level: str,
     log_format: str,
@@ -36,12 +34,9 @@ def start_polling(
         click.echo(str(e), err=True)
         sys.exit(2)
 
-    # TODO: Add possibility to specify bot instance
     bot = Bot(
         token=token,
-        parse_mode=parse_mode,
-        disable_web_page_preview=disable_web_page_preview,
-        protect_content=protect_content,
+        default=defaults,
     )
 
     asyncio.run(_polling(bot=bot, dispatcher=dispatcher, skip_updates=skip_updates))
