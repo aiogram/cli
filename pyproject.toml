@@ -29,7 +29,7 @@ dependencies = [
     "click~=8.1.7",
     "click-plugins~=1.1.1",
     "colorama~=0.4.6",
-    "aiogram>=3.0,<4.0",
+    "aiogram>=3.4,<4.0",
     "watchfiles~=0.20.0",
 ]
 
