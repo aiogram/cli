@@ -30,21 +30,7 @@ async def prepare_dispatcher(*, dispatcher: Any, skip_updates: bool) -> Dispatch
     if skip_updates:
         dispatcher.startup.register(do_skip_updates)
 
-    _add_status_watcher(dispatcher)
-
-    return dispatcher
-
-
-def simplified_prepare_dispatcher(*, dispatcher: Any, skip_updates: bool) -> Dispatcher:
-    if callable(dispatcher):
-        dispatcher = dispatcher()
-
-    if not isinstance(dispatcher, Dispatcher):
-        msg = f"Dispatcher must be instance of aiogram.Dispatcher, got: {type(dispatcher)}"
-        raise ValueError(msg)
-
-    if skip_updates:
-        dispatcher.startup.register(do_skip_updates)
+    dispatcher.startup.register(debug_info)
 
     _add_status_watcher(dispatcher)
 
@@ -65,3 +51,7 @@ async def startup_completed_callback():
 
 async def shutdown_completed_callback():
     click.echo("Application stopped")
+
+
+async def debug_info(bot: Bot):
+    logger.debug("Bot defaults: %s", bot.default)

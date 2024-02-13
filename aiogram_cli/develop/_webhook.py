@@ -9,7 +9,6 @@ import aiogram
 import click
 from aiogram import Bot
 from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
 from aiogram.types import FSInputFile
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiohttp.web import Application, run_app
@@ -81,6 +80,7 @@ def start_webhook(
 
 
 async def _create_app(
+    *,
     bot: Bot,
     dispatcher: Any,
     path: str,

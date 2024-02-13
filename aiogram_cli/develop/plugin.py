@@ -46,17 +46,17 @@ def defaults_options(func):
     @click.option("--link-preview-show-above-text", is_flag=True, help="Show link preview above text")
     @functools.wraps(func)
     def _wrapper(
-            *args,
-            parse_mode: ParseMode | None,
-            protect_content: bool | None,
-            disable_notification: bool | None,
-            allow_sending_without_reply: bool | None,
-            disable_web_page_preview: bool | None,
-            link_preview_is_disabled: bool | None,
-            link_preview_prefer_small_media: bool | None,
-            link_preview_prefer_large_media: bool | None,
-            link_preview_show_above_text: bool | None,
-            **kwargs,
+        *args,
+        parse_mode: ParseMode | None,
+        protect_content: bool | None,
+        disable_notification: bool | None,
+        allow_sending_without_reply: bool | None,
+        disable_web_page_preview: bool | None,
+        link_preview_is_disabled: bool | None,
+        link_preview_prefer_small_media: bool | None,
+        link_preview_prefer_large_media: bool | None,
+        link_preview_show_above_text: bool | None,
+        **kwargs,
     ):
         if disable_web_page_preview:
             click.secho(
@@ -121,15 +121,15 @@ def defaults_options(func):
 )
 @defaults_options
 def command_polling(
-        *,
-        dispatcher: str,
-        token: str,
-        defaults: DefaultBotProperties,
-        skip_updates: bool,
-        reload: bool,
-        log_level: str,
-        log_format: str,
-        reload_path: tuple[str],
+    *,
+    dispatcher: str,
+    token: str,
+    defaults: DefaultBotProperties,
+    skip_updates: bool,
+    reload: bool,
+    log_level: str,
+    log_format: str,
+    reload_path: tuple[str],
 ):
     """
     Run bot in development mode with polling updates
@@ -236,22 +236,22 @@ def command_polling(
 )
 @defaults_options
 def command_webhook(
-        *,
-        dispatcher: str,
-        host: str,
-        port: int,
-        path: str,
-        ssl_certificate: Path | None,
-        ssl_private_key: Path | None,
-        address: str | None,
-        secret: str | None,
-        token: str,
-        defaults: DefaultBotProperties,
-        skip_updates: bool,
-        reload: bool,
-        log_level: str,
-        log_format: str,
-        reload_path: tuple[str],
+    *,
+    dispatcher: str,
+    host: str,
+    port: int,
+    path: str,
+    ssl_certificate: Path | None,
+    ssl_private_key: Path | None,
+    address: str | None,
+    secret: str | None,
+    token: str,
+    defaults: DefaultBotProperties,
+    skip_updates: bool,
+    reload: bool,
+    log_level: str,
+    log_format: str,
+    reload_path: tuple[str],
 ):
     """
     Run bot in development mode with webhook updates
