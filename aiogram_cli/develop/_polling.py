@@ -8,6 +8,7 @@ import click
 from aiogram import Bot
 from aiogram.client.default import DefaultBotProperties
 
+from aiogram_cli.develop._bot import create_bot
 from aiogram_cli.develop._dispatcher import prepare_dispatcher, resolve_dispatcher
 from aiogram_cli.develop._resolver import LoadError
 
@@ -18,6 +19,7 @@ def start_polling(
     token: str,
     defaults: DefaultBotProperties,
     skip_updates: bool,
+    api_address: str,
     log_level: str,
     log_format: str,
 ) -> int:
@@ -34,10 +36,7 @@ def start_polling(
         click.echo(str(e), err=True)
         sys.exit(2)
 
-    bot = Bot(
-        token=token,
-        default=defaults,
-    )
+    bot = create_bot(token=token, default=defaults, api_address=api_address)
 
     asyncio.run(_polling(bot=bot, dispatcher=dispatcher, skip_updates=skip_updates))
     return 0
@@ -49,6 +48,11 @@ async def _polling(
     bot: Bot,
     skip_updates: bool = False,
 ):
-    dispatcher = await prepare_dispatcher(dispatcher=dispatcher, skip_updates=skip_updates)
-    async with bot.context() as bot:
-        await dispatcher.start_polling(bot, close_bot_session=False)
+    try:
+        dispatcher = await prepare_dispatcher(dispatcher=dispatcher, skip_updates=skip_updates)
+        async with bot:
+            await dispatcher.start_polling(bot, close_bot_session=False)
+    except Exception as e:
+        click.echo(f"Application startup failed - {type(e).__name__}: {e}", err=True)
+        raise
+

@@ -12,6 +12,7 @@ from click import Choice, style
 from watchfiles import run_process
 from watchfiles.main import FileChange
 
+from aiogram_cli.develop._bot import create_bot
 from aiogram_cli.develop._polling import start_polling
 from aiogram_cli.develop._webhook import start_webhook
 from aiogram_cli.wraps import async_command
@@ -32,6 +33,9 @@ LOGGING_LEVELS = [
 def develop_runner():
     """Run bot in development mode"""
     sys.path.append(str(Path().resolve()))
+    # TODO: Switch asyncio event loop policy for windows only
+    # if sys.platform == "win32":
+    #     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
 def defaults_options(func):
@@ -96,6 +100,12 @@ def defaults_options(func):
     is_flag=True,
 )
 @click.option(
+    "--api-address",
+    help="Telegram Bot API server address, "
+         "can be 'main', 'test', 'beta' or custom address like `http:/127.0.0.1:8002/`",
+    default="main",
+)
+@click.option(
     "--log-level",
     "-l",
     type=Choice(LOGGING_LEVELS, case_sensitive=False),
@@ -130,6 +140,7 @@ def command_polling(
     log_level: str,
     log_format: str,
     reload_path: tuple[str],
+    api_address: str,
 ):
     """
     Run bot in development mode with polling updates
@@ -141,6 +152,7 @@ def command_polling(
         "target": dispatcher,
         "token": token,
         "skip_updates": skip_updates,
+        "api_address": api_address,
         "log_level": log_level,
         "log_format": log_format,
         "defaults": defaults,
@@ -211,6 +223,12 @@ def command_polling(
     is_flag=True,
 )
 @click.option(
+    "--api-address",
+    help="Telegram Bot API server address, "
+         "can be 'main', 'test', 'beta' or custom address like `http:/127.0.0.1:8002/`",
+    default="main",
+)
+@click.option(
     "--log-level",
     "-l",
     type=Choice(LOGGING_LEVELS, case_sensitive=False),
@@ -248,6 +266,7 @@ def command_webhook(
     token: str,
     defaults: DefaultBotProperties,
     skip_updates: bool,
+    api_address: str,
     reload: bool,
     log_level: str,
     log_format: str,
@@ -270,6 +289,7 @@ def command_webhook(
         "webhook_secret": secret,
         "token": token,
         "skip_updates": skip_updates,
+        "api_address": api_address,
         "defaults": defaults,
         "log_level": log_level,
         "log_format": log_format,
@@ -299,9 +319,15 @@ def _changes_detected(changes: set[FileChange]):
     required=True,
     default=getenv("TELEGRAM_TOKEN"),
 )
+@click.option(
+    "--api-address",
+    help="Telegram Bot API server address, "
+         "can be 'main', 'test', 'beta' or custom address like `http:/127.0.0.1:8002/`",
+    default="main",
+)
 @async_command
-async def command_info(token: str):
-    async with Bot(token=token).context() as bot:
+async def command_info(token: str, api_address: str):
+    async with create_bot(token=token, default=None, api_address=api_address) as bot:
         me = await bot.get_me()
         webhook_info = await bot.get_webhook_info()
 

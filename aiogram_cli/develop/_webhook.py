@@ -13,6 +13,7 @@ from aiogram.types import FSInputFile
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiohttp.web import Application, run_app
 
+from aiogram_cli.develop._bot import create_bot
 from aiogram_cli.develop._dispatcher import prepare_dispatcher, resolve_dispatcher
 from aiogram_cli.develop._resolver import LoadError
 
@@ -32,6 +33,7 @@ def start_webhook(
     token: str,
     defaults: DefaultBotProperties,
     skip_updates: bool,
+    api_address: str,
     log_level: str,
     log_format: str,
 ) -> int:
@@ -48,10 +50,7 @@ def start_webhook(
         click.echo(str(e), err=True)
         sys.exit(2)
 
-    bot = Bot(
-        token=token,
-        default=defaults,
-    )
+    bot = create_bot(token=token, default=defaults, api_address=api_address)
     click.echo("Start webhook")
 
     if ssl_certificate and ssl_private_key:
@@ -89,9 +88,14 @@ async def _create_app(
     ssl_certificate: Path | None,
     skip_updates: bool,
 ) -> Application:
-    dispatcher = await prepare_dispatcher(dispatcher=dispatcher, skip_updates=skip_updates)
     app = Application()
-    setup_application(app, dispatcher, bot=bot)
+    try:
+        dispatcher = await prepare_dispatcher(dispatcher=dispatcher, skip_updates=skip_updates)
+        setup_application(app, dispatcher, bot=bot)
+    except Exception as e:
+        click.echo(f"Application startup failed - {type(e).__name__}: {e}", err=True)
+        raise
+
     SimpleRequestHandler(dispatcher=dispatcher, bot=bot, secret_token=webhook_secret).register(app, path=path)
 
     async def _setup_webhook():
